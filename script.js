@@ -12,7 +12,7 @@ let currentCategory = 'הכל';
 function render() {
     const grid = document.getElementById('product-grid');
     if(!grid) return;
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const searchTerm = (document.getElementById('searchInput')?.value || '').toLowerCase();
     
     const filtered = products.filter(p => {
         const matchesSearch = p.name.toLowerCase().includes(searchTerm);
@@ -21,21 +21,18 @@ function render() {
     });
 
     grid.innerHTML = filtered.map(p => `
-        <div class="product-card bg-white rounded-[2rem] p-5 shadow-sm border border-slate-100 flex flex-col transition-all duration-300">
+        <div class="product-card bg-white rounded-[2rem] p-5 shadow-sm border border-slate-100 flex flex-col relative text-right">
             <div class="relative overflow-hidden rounded-[1.5rem] mb-4">
                 <img src="${p.img}" onclick="window.openModal(${p.id})" class="w-full h-48 object-cover cursor-pointer hover:scale-110 transition-transform duration-500">
-                <div class="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">-30%</div>
+                <div class="absolute top-3 right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">מבצע!</div>
             </div>
-            <div class="flex justify-between items-start mb-2">
-                <span class="text-[10px] font-bold bg-slate-100 px-2 py-1 rounded-full text-slate-500 uppercase">${p.category}</span>
-            </div>
-            <h3 class="font-bold text-lg mb-4 leading-tight cursor-pointer text-right" onclick="window.openModal(${p.id})">${p.name}</h3>
+            <h3 class="font-bold text-lg mb-4 cursor-pointer" onclick="window.openModal(${p.id})">${p.name}</h3>
             <div class="mt-auto flex justify-between items-center flex-row-reverse">
-                <div class="flex flex-col text-right">
+                <div class="flex flex-col">
                     <span class="text-slate-400 line-through text-xs">₪${p.originalPrice}</span>
                     <span class="text-2xl font-black text-green-600">₪${p.price}</span>
                 </div>
-                <button onclick="window.addToCart(${p.id}, this)" class="bg-slate-900 text-white h-10 w-10 flex items-center justify-center rounded-xl hover:bg-green-600 transition-colors shadow-lg">
+                <button onclick="window.addToCart(${p.id}, this)" class="bg-slate-900 text-white h-10 w-10 flex items-center justify-center rounded-xl hover:bg-green-600 shadow-lg">
                     +
                 </button>
             </div>
@@ -45,15 +42,13 @@ function render() {
 
 window.closePromo = function() {
     const promo = document.getElementById('promo-modal');
-    promo.style.opacity = '0';
-    setTimeout(() => { promo.style.display = 'none'; }, 300);
+    if(promo) promo.style.display = 'none';
 };
 
 window.openModal = function(id) {
     const p = products.find(prod => prod.id === id);
     document.getElementById('modal-title').innerText = p.name;
     document.getElementById('modal-desc').innerText = p.desc;
-    document.getElementById('modal-category').innerText = p.category;
     document.getElementById('modal-old-price').innerText = `₪${p.originalPrice}`;
     document.getElementById('modal-price').innerText = `₪${p.price}`;
     document.getElementById('modal-img-container').style.background = `url('${p.img}') center/cover`;
@@ -71,8 +66,8 @@ window.addToCart = function(id, btn = null) {
     updateUI();
     if(btn) {
         btn.innerHTML = "✓";
-        btn.classList.replace('bg-slate-900', 'bg-green-500');
-        setTimeout(() => { btn.innerHTML = "+"; btn.classList.replace('bg-green-500', 'bg-slate-900'); }, 1000);
+        btn.classList.add('bg-green-500');
+        setTimeout(() => { btn.innerHTML = "+"; btn.classList.remove('bg-green-500'); }, 1000);
     }
 };
 
@@ -81,11 +76,11 @@ function updateUI() {
     const itemsEl = document.getElementById('cart-items');
     const total = cart.reduce((sum, item) => sum + item.price, 0);
     itemsEl.innerHTML = cart.map((item, index) => `
-        <div class="flex gap-4 bg-slate-50 p-3 rounded-2xl border border-slate-100 flex-row-reverse">
+        <div class="flex gap-4 bg-slate-50 p-3 rounded-2xl border border-slate-100 flex-row-reverse text-right">
             <img src="${item.img}" class="w-12 h-12 rounded-lg object-cover">
-            <div class="flex-grow text-right">
-                <p class="font-bold text-sm leading-none mb-1">${item.name}</p>
-                <p class="text-green-600 font-bold italic text-sm">₪${item.price}</p>
+            <div class="flex-grow">
+                <p class="font-bold text-sm mb-1">${item.name}</p>
+                <p class="text-green-600 font-bold text-sm">₪${item.price}</p>
             </div>
             <button onclick="window.removeFromCart(${index})" class="text-slate-300 hover:text-red-500 transition">🗑️</button>
         </div>
@@ -104,16 +99,19 @@ window.toggleCart = function() {
 
 window.filterByCategory = function(cat) {
     currentCategory = cat;
-    document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.classList.replace('bg-green-600', 'bg-slate-100');
-        btn.classList.remove('text-white');
-    });
-    event.target.classList.replace('bg-slate-100', 'bg-green-600');
-    event.target.classList.add('text-white');
     render();
 };
 
 window.filterProducts = render;
+
+// הפעלה סופית
+window.onload = function() {
+    render();
+    setTimeout(() => {
+        const promo = document.getElementById('promo-modal');
+        if(promo) promo.style.display = 'flex';
+    }, 2000);
+};
 
 window.sendOrder = function() {
     if (cart.length === 0) return alert("הסל ריק!");
@@ -123,14 +121,6 @@ window.sendOrder = function() {
 
     let msg = `*הזמנה חדשה - החנות של שנאור*\n👤 גננת: ${name}\n🏫 גן: ${garden}\n--------------------------\n`;
     cart.forEach(i => msg += `• ${i.name} - ₪${i.price}\n`);
-    msg += `--------------------------\n*סה"כ לתשלום: ${document.getElementById('cart-total').innerText}*`;
+    msg += `--------------------------\n*סה"כ: ${document.getElementById('cart-total').innerText}*`;
     window.open(`https://wa.me/972500000000?text=${encodeURIComponent(msg)}`);
 };
-
-document.addEventListener('DOMContentLoaded', () => {
-    render();
-    setTimeout(() => {
-        const promo = document.getElementById('promo-modal');
-        if(promo) promo.classList.add('modal-active');
-    }, 2000);
-});
