@@ -93,10 +93,10 @@ window.sendOrder = function(method) {
     const total = cart.reduce((s,i)=>s+i.price,0);
 
     if(method === 'credit') {
-        alert("מעבר לדף תשלום מאובטח... (שנאור, כאן נחבר את הלינק שתקבל מחברת הסליקה)");
+        alert("מעבר לדף תשלום מאובטח... (שניאור, כאן נחבר את הלינק שתקבל מחברת הסליקה)");
         // window.location.href = "https://meshulam.co.il/pay/YOUR_LINK_HERE";
     } else {
-        let msg = `*הזמנה חדשה משנאור*\n👤 גננת: ${name}\nסה"כ: ₪${total}\n------------------\n`;
+        let msg = `*הזמנה חדשה משניאור*\n👤 גננת: ${name}\nסה"כ: ₪${total}\n------------------\n`;
         cart.forEach(i => msg += `• ${i.name} - ₪${i.price}\n`);
         window.open(`https://wa.me/972500000000?text=${encodeURIComponent(msg)}`);
     }
