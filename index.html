@@ -3,61 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>החנות של שנאור - מוצרים לגננות</title>
+    <title>שנאור | ציוד פרימיום לגננות</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Assistant', sans-serif; scroll-behavior: smooth; }
-        .product-card:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+        body { font-family: 'Assistant', sans-serif; overflow-x: hidden; }
+        .product-card:hover { transform: scale(1.02); }
+        .modal-active { display: flex !important; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-slate-50 text-slate-900">
 
-    <nav class="bg-white shadow-lg sticky top-0 z-50 py-4 px-6 flex justify-between items-center">
-        <h1 class="text-2xl font-extrabold text-green-600 tracking-tight">שנאור <span class="text-gray-400 font-light">| ציוד לגן</span></h1>
-        <div class="flex items-center gap-4">
-            <div class="relative cursor-pointer group" onclick="toggleCart()">
-                <span class="text-3xl transition group-hover:scale-110 block">🛒</span>
-                <span id="cart-count" class="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">0</span>
-            </div>
+    <div class="bg-green-600 text-white text-center py-2 text-sm font-bold tracking-wide">
+        🌟 מבצע אביב: משלוח חינם בהזמנה מעל 350 ש"ח!
+    </div>
+
+    <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-40 py-4 px-6 flex justify-between items-center border-b">
+        <div class="flex items-center gap-3">
+            <div class="bg-green-100 p-2 rounded-lg text-2xl">🧸</div>
+            <h1 class="text-2xl font-extrabold text-green-700">שנאור <span class="text-slate-400 font-light">ציוד לגן</span></h1>
+        </div>
+        <div class="relative cursor-pointer" onclick="window.toggleCart()">
+            <span class="text-3xl">🛒</span>
+            <span id="cart-count" class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">0</span>
         </div>
     </nav>
 
-    <section class="bg-white border-b p-6">
-        <div class="container mx-auto flex flex-col md:flex-row gap-4 items-center justify-between">
-            <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="חפשי מוצר... (למשל: סתיו, לוח, מארז)" 
-                class="w-full md:w-1/3 p-3 border rounded-full focus:ring-2 focus:ring-green-500 outline-none shadow-sm">
+    <section class="container mx-auto p-6 mt-4">
+        <div class="bg-white rounded-3xl shadow-sm p-4 flex flex-col md:flex-row gap-4 items-center border border-slate-100">
+            <input type="text" id="searchInput" onkeyup="window.filterProducts()" placeholder="חפשי מוצר או ערכה..." 
+                class="w-full md:w-1/3 p-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-green-400 transition">
             
-            <div class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
-                <button onclick="filterByCategory('הכל')" class="bg-green-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md">הכל</button>
-                <button onclick="filterByCategory('עונות')" class="bg-white border px-4 py-2 rounded-full text-sm hover:bg-gray-100 transition">עונות</button>
-                <button onclick="filterByCategory('למידה')" class="bg-white border px-4 py-2 rounded-full text-sm hover:bg-gray-100 transition">למידה</button>
-                <button onclick="filterByCategory('קישוט')" class="bg-white border px-4 py-2 rounded-full text-sm hover:bg-gray-100 transition">קישוט</button>
+            <div class="flex gap-2 overflow-x-auto w-full no-scrollbar">
+                <button onclick="window.filterByCategory('הכל')" class="category-btn bg-green-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-sm">הכל</button>
+                <button onclick="window.filterByCategory('עונות')" class="category-btn bg-slate-100 px-6 py-2 rounded-xl text-sm font-semibold hover:bg-slate-200 transition">עונות</button>
+                <button onclick="window.filterByCategory('למידה')" class="category-btn bg-slate-100 px-6 py-2 rounded-xl text-sm font-semibold hover:bg-slate-200 transition">למידה</button>
+                <button onclick="window.filterByCategory('קישוט')" class="category-btn bg-slate-100 px-6 py-2 rounded-xl text-sm font-semibold hover:bg-slate-200 transition">קישוט</button>
             </div>
         </div>
     </section>
 
-    <main class="container mx-auto p-8">
-        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
-    </main>
+    <main class="container mx-auto p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="product-grid"></main>
 
-    <div id="side-cart" class="fixed top-0 left-0 h-full w-full md:w-96 bg-white shadow-2xl transform -translate-x-full transition-transform duration-300 z-[100] p-6 flex flex-col">
-        <div class="flex justify-between items-center border-b pb-4 mb-4">
-            <h3 class="text-2xl font-bold">ההזמנה שלי</h3>
-            <button onclick="toggleCart()" class="text-3xl text-gray-400 hover:text-black">&times;</button>
+    <div id="product-modal" class="fixed inset-0 bg-black/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl relative flex flex-col md:flex-row">
+            <button onclick="window.closeModal()" class="absolute top-4 right-4 text-3xl text-slate-400 z-10">&times;</button>
+            <div class="w-full md:w-1/2 h-64 md:h-auto bg-slate-100" id="modal-img-container"></div>
+            <div class="w-full md:w-1/2 p-8 flex flex-col justify-center">
+                <span id="modal-category" class="text-green-600 font-bold text-sm uppercase"></span>
+                <h3 id="modal-title" class="text-3xl font-extrabold my-2"></h3>
+                <p id="modal-desc" class="text-slate-500 leading-relaxed mb-6"></p>
+                <div class="flex justify-between items-center mt-auto">
+                    <span id="modal-price" class="text-3xl font-black"></span>
+                    <button id="modal-add-btn" class="bg-green-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-green-700 transition">הוספה לסל</button>
+                </div>
+            </div>
         </div>
-        
-        <div id="cart-items" class="flex-grow overflow-y-auto space-y-4 mb-4"></div>
+    </div>
 
-        <div class="border-t pt-4 space-y-3">
-            <input type="text" id="customerName" placeholder="שם הגננת" class="w-full p-2 border rounded">
-            <input type="text" id="gardenName" placeholder="שם הגן" class="w-full p-2 border rounded">
-            <div class="flex justify-between text-xl font-bold py-2">
+    <div id="side-cart" class="fixed top-0 left-0 h-full w-full md:w-[400px] bg-white shadow-2xl transform -translate-x-full transition-transform duration-500 z-[110] flex flex-col">
+        <div class="p-6 border-b flex justify-between items-center bg-slate-50">
+            <h3 class="text-xl font-extrabold">הסל שלי</h3>
+            <button onclick="window.toggleCart()" class="text-3xl text-slate-300 hover:text-slate-900">&times;</button>
+        </div>
+        <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4 custom-scrollbar"></div>
+        <div class="p-6 border-t bg-slate-50 space-y-4">
+            <input type="text" id="customerName" placeholder="שם הגננת" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-400">
+            <input type="text" id="gardenName" placeholder="שם הגן ועיר" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-400">
+            <div class="flex justify-between text-2xl font-black pt-2">
                 <span>סה"כ:</span>
                 <span id="cart-total">₪0</span>
             </div>
-            <button onclick="sendOrder()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 shadow-lg transition">
-                שליחת הזמנה לוואטסאפ
+            <button onclick="window.sendOrder()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-green-200 transition-all flex justify-center items-center gap-2">
+                שליחה לוואטסאפ 💬
             </button>
         </div>
     </div>
