@@ -12,12 +12,30 @@
         .modal-active { display: flex !important; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        @keyframes bounce-short {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-bounce-short { animation: bounce-short 2s ease-in-out infinite; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
 
+    <div id="promo-modal" class="fixed inset-0 bg-black/70 z-[200] hidden items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full text-center shadow-2xl border-4 border-green-500 relative animate-bounce-short">
+            <button onclick="window.closePromo()" class="absolute top-4 right-4 text-gray-400 text-2xl hover:text-black">&times;</button>
+            <div class="text-5xl mb-4">🎁</div>
+            <h2 class="text-3xl font-black text-green-600 mb-2">מבצע מיוחד!</h2>
+            <p class="text-xl font-bold text-slate-700 mb-4">30% הנחה על כל האתר</p>
+            <p class="text-sm text-slate-500 mb-6 italic">*לזמן מוגבל בלבד - המחירים באתר כבר מעודכנים!*</p>
+            <button onclick="window.closePromo()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:bg-green-700 transition-transform active:scale-95">
+                איזה כיף! בואו נתחיל
+            </button>
+        </div>
+    </div>
+
     <div class="bg-green-600 text-white text-center py-2 text-sm font-bold tracking-wide">
-        🌟 מבצע אביב: משלוח חינם בהזמנה מעל 350 ש"ח!
+        🌟 מבצע אביב: 30% הנחה על כל המוצרים ומשלוח חינם מעל 350 ש"ח!
     </div>
 
     <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-40 py-4 px-6 flex justify-between items-center border-b">
@@ -27,7 +45,7 @@
         </div>
         <div class="relative cursor-pointer" onclick="window.toggleCart()">
             <span class="text-3xl">🛒</span>
-            <span id="cart-count" class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">0</span>
+            <span id="cart-count" class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white shadow-sm">0</span>
         </div>
     </nav>
 
@@ -48,15 +66,18 @@
     <main class="container mx-auto p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="product-grid"></main>
 
     <div id="product-modal" class="fixed inset-0 bg-black/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl relative flex flex-col md:flex-row">
+        <div class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl relative flex flex-col md:flex-row text-right">
             <button onclick="window.closeModal()" class="absolute top-4 right-4 text-3xl text-slate-400 z-10">&times;</button>
             <div class="w-full md:w-1/2 h-64 md:h-auto bg-slate-100" id="modal-img-container"></div>
             <div class="w-full md:w-1/2 p-8 flex flex-col justify-center">
                 <span id="modal-category" class="text-green-600 font-bold text-sm uppercase"></span>
-                <h3 id="modal-title" class="text-3xl font-extrabold my-2"></h3>
+                <h3 id="modal-title" class="text-3xl font-extrabold my-2 leading-tight"></h3>
                 <p id="modal-desc" class="text-slate-500 leading-relaxed mb-6"></p>
                 <div class="flex justify-between items-center mt-auto">
-                    <span id="modal-price" class="text-3xl font-black"></span>
+                    <div class="flex flex-col">
+                        <span id="modal-old-price" class="text-slate-400 line-through text-sm"></span>
+                        <span id="modal-price" class="text-3xl font-black text-green-600"></span>
+                    </div>
                     <button id="modal-add-btn" class="bg-green-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-green-700 transition">הוספה לסל</button>
                 </div>
             </div>
@@ -69,7 +90,7 @@
             <button onclick="window.toggleCart()" class="text-3xl text-slate-300 hover:text-slate-900">&times;</button>
         </div>
         <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4 custom-scrollbar"></div>
-        <div class="p-6 border-t bg-slate-50 space-y-4">
+        <div class="p-6 border-t bg-slate-50 space-y-4 text-right">
             <input type="text" id="customerName" placeholder="שם הגננת" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-400">
             <input type="text" id="gardenName" placeholder="שם הגן ועיר" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-400">
             <div class="flex justify-between text-2xl font-black pt-2">
