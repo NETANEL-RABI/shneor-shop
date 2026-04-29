@@ -28,11 +28,11 @@ function render() {
             </div>
             <h3 class="font-bold text-lg mb-4 cursor-pointer" onclick="window.openModal(${p.id})">${p.name}</h3>
             <div class="mt-auto flex justify-between items-center flex-row-reverse">
-                <div class="flex flex-col">
+                <div class="flex flex-col text-right">
                     <span class="text-slate-400 line-through text-xs">₪${p.originalPrice}</span>
                     <span class="text-2xl font-black text-green-600">₪${p.price}</span>
                 </div>
-                <button onclick="window.addToCart(${p.id}, this)" class="bg-slate-900 text-white h-10 w-10 flex items-center justify-center rounded-xl hover:bg-green-600 shadow-lg">
+                <button onclick="window.addToCart(${p.id}, this)" class="bg-slate-900 text-white h-10 w-10 flex items-center justify-center rounded-xl hover:bg-green-600 transition-colors">
                     +
                 </button>
             </div>
@@ -40,26 +40,33 @@ function render() {
     `).join('');
 }
 
+// ניהול חלון המבצע (Promo)
 window.closePromo = function() {
     const promo = document.getElementById('promo-modal');
-    if(promo) promo.style.display = 'none';
+    if(promo) {
+        promo.classList.replace('modal-active', 'modal-hidden');
+    }
 };
 
+// ניהול חלון פרטי מוצר
 window.openModal = function(id) {
     const p = products.find(prod => prod.id === id);
+    if(!p) return;
     document.getElementById('modal-title').innerText = p.name;
     document.getElementById('modal-desc').innerText = p.desc;
     document.getElementById('modal-old-price').innerText = `₪${p.originalPrice}`;
     document.getElementById('modal-price').innerText = `₪${p.price}`;
     document.getElementById('modal-img-container').style.background = `url('${p.img}') center/cover`;
     document.getElementById('modal-add-btn').onclick = () => { window.addToCart(p.id); window.closeModal(); };
-    document.getElementById('product-modal').classList.add('modal-active');
+    
+    document.getElementById('product-modal').classList.replace('modal-hidden', 'modal-active');
 };
 
 window.closeModal = function() {
-    document.getElementById('product-modal').classList.remove('modal-active');
+    document.getElementById('product-modal').classList.replace('modal-active', 'modal-hidden');
 };
 
+// ניהול עגלה
 window.addToCart = function(id, btn = null) {
     const product = products.find(p => p.id === id);
     cart.push(product);
@@ -75,6 +82,7 @@ function updateUI() {
     document.getElementById('cart-count').innerText = cart.length;
     const itemsEl = document.getElementById('cart-items');
     const total = cart.reduce((sum, item) => sum + item.price, 0);
+    
     itemsEl.innerHTML = cart.map((item, index) => `
         <div class="flex gap-4 bg-slate-50 p-3 rounded-2xl border border-slate-100 flex-row-reverse text-right">
             <img src="${item.img}" class="w-12 h-12 rounded-lg object-cover">
@@ -82,7 +90,7 @@ function updateUI() {
                 <p class="font-bold text-sm mb-1">${item.name}</p>
                 <p class="text-green-600 font-bold text-sm">₪${item.price}</p>
             </div>
-            <button onclick="window.removeFromCart(${index})" class="text-slate-300 hover:text-red-500 transition">🗑️</button>
+            <button onclick="window.removeFromCart(${index})" class="text-slate-300 hover:text-red-500">🗑️</button>
         </div>
     `).join('');
     document.getElementById('cart-total').innerText = `₪${total}`;
@@ -104,14 +112,17 @@ window.filterByCategory = function(cat) {
 
 window.filterProducts = render;
 
-// הפעלה סופית
-window.onload = function() {
+// פונקציית טעינה סופית
+window.addEventListener('load', () => {
     render();
+    // הצגת המבצע אחרי 2 שניות בדיוק
     setTimeout(() => {
         const promo = document.getElementById('promo-modal');
-        if(promo) promo.style.display = 'flex';
+        if(promo) {
+            promo.classList.replace('modal-hidden', 'modal-active');
+        }
     }, 2000);
-};
+});
 
 window.sendOrder = function() {
     if (cart.length === 0) return alert("הסל ריק!");
@@ -121,6 +132,6 @@ window.sendOrder = function() {
 
     let msg = `*הזמנה חדשה - החנות של שנאור*\n👤 גננת: ${name}\n🏫 גן: ${garden}\n--------------------------\n`;
     cart.forEach(i => msg += `• ${i.name} - ₪${i.price}\n`);
-    msg += `--------------------------\n*סה"כ: ${document.getElementById('cart-total').innerText}*`;
+    msg += `--------------------------\n*סה"כ לתשלום: ${document.getElementById('cart-total').innerText}*`;
     window.open(`https://wa.me/972500000000?text=${encodeURIComponent(msg)}`);
 };
