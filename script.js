@@ -9,19 +9,13 @@ const products = [
 let cart = [];
 let currentCategory = 'הכל';
 
-// ניווט
+// ניווט וסינון
 window.showSection = function(section) {
-    if(section === 'about') {
-        document.getElementById('shop-section').classList.add('hidden');
-        document.getElementById('about-section').classList.remove('hidden');
-    } else {
-        document.getElementById('about-section').classList.add('hidden');
-        document.getElementById('shop-section').classList.remove('hidden');
-    }
+    document.getElementById('shop-section').classList.toggle('hidden', section === 'about');
+    document.getElementById('about-section').classList.toggle('hidden', section === 'shop');
     window.scrollTo(0,0);
 };
 
-// חיפוש וסינון
 window.filterProducts = function() { render(); };
 
 window.filterByCategory = function(cat) {
@@ -47,7 +41,7 @@ function render() {
             <h3 class="font-bold text-lg mb-4 h-12 overflow-hidden">${p.name}</h3>
             <div class="mt-auto flex justify-between items-center flex-row-reverse">
                 <div class="flex flex-col">
-                    <span class="text-slate-400 line-through text-xs">₪${p.originalPrice}</span>
+                    <span class="text-slate-400 line-through text-[10px]">₪${p.originalPrice}</span>
                     <span class="text-2xl font-black text-green-600">₪${p.price}</span>
                 </div>
                 <button onclick="window.addToCart(${p.id}, this)" class="bg-slate-900 text-white h-12 w-12 rounded-2xl font-bold text-xl">+</button>
@@ -56,15 +50,14 @@ function render() {
     `).join('');
 }
 
-// עגלה
+// עגלה ותשלום
 window.toggleCart = function() { document.getElementById('side-cart').classList.toggle('show-cart'); };
 
 window.addToCart = function(id, btn) {
     cart.push(products.find(p => p.id === id));
     updateUI();
     if(btn) {
-        btn.innerHTML = "✓";
-        btn.classList.replace('bg-slate-900', 'bg-green-500');
+        btn.innerHTML = "✓"; btn.classList.replace('bg-slate-900', 'bg-green-500');
         setTimeout(() => { btn.innerHTML = "+"; btn.classList.replace('bg-green-500', 'bg-slate-900'); }, 800);
     }
 };
@@ -73,8 +66,8 @@ function updateUI() {
     document.getElementById('cart-count').innerText = cart.length;
     const total = cart.reduce((sum, item) => sum + item.price, 0);
     document.getElementById('cart-items').innerHTML = cart.map((item, index) => `
-        <div class="flex gap-4 bg-slate-50 p-3 rounded-2xl flex-row-reverse text-right items-center border border-slate-100">
-            <div class="flex-grow font-bold text-xs">${item.name} - ₪${item.price}</div>
+        <div class="flex justify-between items-center bg-white p-2 rounded-lg mb-2 text-xs border">
+            <span>${item.name} - ₪${item.price}</span>
             <button onclick="window.removeFromCart(${index})" class="text-red-400">🗑️</button>
         </div>
     `).join('');
@@ -82,25 +75,33 @@ function updateUI() {
 }
 
 window.removeFromCart = function(index) { cart.splice(index, 1); updateUI(); };
-window.closePromo = function() { document.getElementById('promo-modal').classList.remove('show-promo'); };
 
-// שליחת הזמנה - וואטסאפ או אשראי
-window.sendOrder = function(method) {
-    if(cart.length === 0) return alert("הסל ריק!");
-    const name = document.getElementById('customerName').value;
-    if(!name) return alert("נא למלא שם גננת");
-    
-    const total = cart.reduce((s,i)=>s+i.price,0);
+window.handleOrder = function() {
+    const name = document.getElementById('custName').value;
+    const phone = document.getElementById('custPhone').value;
+    const address = document.getElementById('custAddress').value;
+    const total = cart.reduce((s, i) => s + i.price, 0);
 
-    if(method === 'credit') {
-        alert("מעבר לדף תשלום מאובטח... (שניאור, כאן נחבר את הלינק שתקבל מחברת הסליקה)");
-        // window.location.href = "https://meshulam.co.il/pay/YOUR_LINK_HERE";
-    } else {
-        let msg = `*הזמנה חדשה משניאור*\n👤 גננת: ${name}\nסה"כ: ₪${total}\n------------------\n`;
-        cart.forEach(i => msg += `• ${i.name} - ₪${i.price}\n`);
-        window.open(`https://wa.me/972500000000?text=${encodeURIComponent(msg)}`);
-    }
+    if (!name || !phone || !address) return alert("נא למלא את כל פרטי המשלוח");
+    if (cart.length === 0) return alert("הסל ריק");
+
+    const itemsList = cart.map(i => i.name).join(", ");
+    const mailTo = "s7176745@gmail.com";
+    const subject = encodeURIComponent(`הזמנה חדשה משנאור: ${name}`);
+    const body = encodeURIComponent(`פרטי לקוח:\nשם: ${name}\nטלפון: ${phone}\nכתובת: ${address}\n\nמוצרים:\n${itemsList}\n\nסה"כ לתשלום: ₪${total}`);
+
+    // פתיחת מייל
+    window.location.href = `mailto:${mailTo}?subject=${subject}&body=${body}`;
+
+    // מעבר לתשלום אחרי השליחה
+    setTimeout(() => {
+        if(confirm("האם המייל נשלח? לחצי אישור למעבר לתשלום באשראי")) {
+            window.location.href = "https://meshulam.co.il/pay/YOUR_LINK"; // תחליף בלינק האמיתי שלך
+        }
+    }, 1500);
 };
+
+window.closePromo = function() { document.getElementById('promo-modal').classList.remove('show-promo'); };
 
 window.onload = function() {
     render();
