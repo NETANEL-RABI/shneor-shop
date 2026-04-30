@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>שניאור | ציוד לגן</title>
+    <title>שנאור | ציוד לגן</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -32,7 +32,7 @@
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2 cursor-pointer" onclick="window.showSection('shop')">
                 <div class="bg-green-100 p-2 rounded-lg text-xl">🧸</div>
-                <h1 class="text-2xl font-extrabold text-green-700">שניאור <span class="text-slate-400 font-light text-lg">ציוד לגן</span></h1>
+                <h1 class="text-2xl font-extrabold text-green-700">שנאור <span class="text-slate-400 font-light text-lg">ציוד לגן</span></h1>
             </div>
             <button onclick="window.showSection('about')" class="mr-4 text-slate-600 font-bold hover:text-green-600 border-r pr-4">אודות</button>
         </div>
@@ -42,9 +42,9 @@
         </div>
     </nav>
 
-    <section id="about-section" class="container mx-auto p-8 mt-10 hidden max-w-3xl bg-white rounded-[3rem] shadow-xl text-center">
-        <h2 class="text-4xl font-black text-slate-800 mb-6">אודות שניאור</h2>
-        <p class="text-xl text-slate-600 leading-relaxed text-right">שניאור הוקמה כדי להעניק לגננות פתרונות יצירתיים, איכותיים ומעוצבים. כל ערכה ומוצר נבחרים בקפידה כדי לשדרג את חוויית הלמידה בגן.</p>
+    <section id="about-section" class="container mx-auto p-8 mt-10 hidden max-w-3xl bg-white rounded-[3rem] shadow-xl text-center border">
+        <h2 class="text-4xl font-black text-slate-800 mb-6">אודות שנאור</h2>
+        <p class="text-xl text-slate-600 leading-relaxed text-right">שנאור הוקמה כדי לספק לגננות פתרונות עיצוביים ופדגוגיים ברמה הגבוהה ביותר. כל מוצר נבחר כדי להפוך את הגן למקום שמח ומלמד יותר.</p>
         <button onclick="window.showSection('shop')" class="mt-8 bg-green-600 text-white px-8 py-3 rounded-xl font-bold">חזרה לחנות</button>
     </section>
 
@@ -52,7 +52,7 @@
         <section class="container mx-auto p-6 mt-4">
             <div class="bg-white rounded-3xl shadow-sm p-4 flex flex-col md:flex-row gap-4 items-center">
                 <input type="text" id="searchInput" onkeyup="window.filterProducts()" placeholder="חפשי מוצר..." 
-                    class="w-full md:w-1/3 p-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-green-400 text-right text-lg">
+                    class="w-full md:w-1/3 p-3 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-green-400 text-right">
                 
                 <div class="flex gap-2 overflow-x-auto w-full no-scrollbar">
                     <button onclick="window.filterByCategory('הכל')" class="cat-btn bg-green-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-sm whitespace-nowrap">הכל</button>
@@ -65,23 +65,38 @@
         <main class="container mx-auto p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="product-grid"></main>
     </div>
 
-    <div id="side-cart" class="fixed top-0 right-0 h-full w-full md:w-[400px] bg-white shadow-2xl z-[110] flex flex-col">
+    <div id="side-cart" class="fixed top-0 right-0 h-full w-full md:w-[450px] bg-white shadow-2xl z-[110] flex flex-col">
         <div class="p-6 border-b flex justify-between items-center bg-slate-50">
-            <h3 class="text-xl font-extrabold">הסל שלי</h3>
+            <h3 class="text-xl font-extrabold">פרטי הזמנה</h3>
             <button onclick="window.toggleCart()" class="text-3xl text-slate-300">&times;</button>
         </div>
-        <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4"></div>
-        <div class="p-6 border-t bg-slate-50 space-y-4 text-right">
-            <input type="text" id="customerName" placeholder="שם הגננת" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500">
-            <div class="flex justify-between text-2xl font-black mb-4">
+        
+        <div id="cart-items" class="p-4 border-b max-h-40 overflow-y-auto bg-slate-50/50"></div>
+
+        <div class="p-6 flex-grow overflow-y-auto space-y-4 text-right">
+            <div>
+                <label class="block font-bold text-sm mb-1">שם הגננת / הגן:</label>
+                <input type="text" id="custName" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500" placeholder="שם מלא">
+            </div>
+            <div>
+                <label class="block font-bold text-sm mb-1">מספר טלפון:</label>
+                <input type="tel" id="custPhone" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500" placeholder="050-0000000">
+            </div>
+            <div>
+                <label class="block font-bold text-sm mb-1">כתובת למשלוח:</label>
+                <textarea id="custAddress" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500" rows="2" placeholder="עיר, רחוב ומספר"></textarea>
+            </div>
+
+            <div class="flex justify-between text-2xl font-black pt-4 border-t">
                 <span>סה"כ:</span>
                 <span id="cart-total">₪0</span>
             </div>
             
-            <p class="text-sm font-bold text-slate-500 mb-2">בחרי שיטת תשלום:</p>
-            <div class="grid grid-cols-1 gap-2">
-                <button onclick="window.sendOrder('whatsapp')" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2">שליחה בוואטסאפ 💬</button>
-                <button onclick="window.sendOrder('credit')" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold shadow-xl flex items-center justify-center gap-2">תשלום באשראי 💳</button>
+            <div class="grid grid-cols-1 gap-3 mt-4">
+                <button onclick="window.handleOrder()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold shadow-xl hover:bg-green-700 transition-all flex flex-col items-center">
+                    <span>אישור פרטים ומעבר לתשלום 💳</span>
+                    <span class="text-[10px] opacity-80">(הפרטים יישלחו אלינו במייל)</span>
+                </button>
             </div>
         </div>
     </div>
