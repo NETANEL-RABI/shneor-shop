@@ -1,3 +1,4 @@
+// רשימת מוצרים
 const products = [
     { id: 1, name: "ערכת יצירה 'סתיו צבעוני'", originalPrice: 65, price: 45, category: "עונות", img: "https://picsum.photos/seed/s1/500/500" },
     { id: 2, name: "לוח אותיות מגנטי", originalPrice: 170, price: 120, category: "למידה", img: "https://picsum.photos/seed/s2/500/500" },
@@ -9,7 +10,7 @@ const products = [
 let cart = [];
 let currentCategory = 'הכל';
 
-// ניווט וסינון
+// פונקציות ניווט
 window.showSection = function(section) {
     const shop = document.getElementById('shop-section');
     const about = document.getElementById('about-section');
@@ -20,7 +21,7 @@ window.showSection = function(section) {
         about.classList.add('hidden');
         shop.classList.remove('hidden');
     }
-    window.scrollTo(0, 0);
+    window.scrollTo(0,0);
 };
 
 window.filterProducts = function() { render(); };
@@ -29,18 +30,18 @@ window.filterByCategory = function(cat) {
     currentCategory = cat;
     document.querySelectorAll('.cat-btn').forEach(btn => {
         btn.classList.replace('bg-green-600', 'bg-slate-100');
-        btn.classList.remove('text-white');
+        btn.classList.remove('text-white', 'font-bold');
     });
     if (event && event.target) {
         event.target.classList.replace('bg-slate-100', 'bg-green-600');
-        event.target.classList.add('text-white');
+        event.target.classList.add('text-white', 'font-bold');
     }
     render();
 };
 
 function render() {
     const grid = document.getElementById('product-grid');
-    if (!grid) return;
+    if(!grid) return;
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const filtered = products.filter(p => (currentCategory === 'הכל' || p.category === currentCategory) && p.name.toLowerCase().includes(searchTerm));
 
@@ -59,7 +60,7 @@ function render() {
     `).join('');
 }
 
-// עגלה
+// פונקציות עגלה
 window.toggleCart = function() {
     document.getElementById('side-cart').classList.toggle('show-cart');
 };
@@ -68,7 +69,7 @@ window.addToCart = function(id, btn) {
     const product = products.find(p => p.id === id);
     cart.push(product);
     updateUI();
-    if (btn) {
+    if(btn) {
         btn.innerHTML = "✓";
         btn.classList.replace('bg-slate-900', 'bg-green-500');
         setTimeout(() => {
@@ -84,9 +85,9 @@ function updateUI() {
     const cartItemsDiv = document.getElementById('cart-items');
     
     cartItemsDiv.innerHTML = cart.map((item, index) => `
-        <div class="flex justify-between items-center bg-white p-2 rounded-lg mb-2 text-xs border border-slate-100">
+        <div class="flex justify-between items-center bg-white p-2 rounded-lg mb-2 text-xs border border-slate-50">
             <button onclick="window.removeFromCart(${index})" class="text-red-400 font-bold px-2">🗑️</button>
-            <span class="font-bold text-right">${item.name} - ₪${item.price}</span>
+            <span class="font-bold">${item.name} - ₪${item.price}</span>
         </div>
     `).join('');
     
@@ -98,7 +99,7 @@ window.removeFromCart = function(index) {
     updateUI();
 };
 
-// פונקציית התשלום והמייל
+// הפונקציה החשובה ביותר - טיפול בהזמנה
 window.handleOrder = function() {
     const name = document.getElementById('custName').value.trim();
     const phone = document.getElementById('custPhone').value.trim();
@@ -126,13 +127,13 @@ window.handleOrder = function() {
         `סה"כ לתשלום: ₪${total}`
     );
 
-    // פתיחת אפליקציית המייל
+    // שליחת המייל
     window.location.href = `mailto:${mailTo}?subject=${subject}&body=${body}`;
 
-    // מעבר לתשלום (משיולם/קארדקום) לאחר השהייה
+    // השהייה קלה כדי שהמייל יפתח, ואז שאלה על מעבר לתשלום
     setTimeout(() => {
         if(confirm("האם המייל נשלח? לחצי 'אישור' כדי לעבור לדף התשלום המאובטח")) {
-            window.location.href = "https://meshulam.co.il/pay/YOUR_LINK"; // שים פה את הלינק שלך
+            window.location.href = "https://meshulam.co.il/pay/YOUR_LINK"; // תחליף בלינק האמיתי שלך
         }
     }, 1500);
 };
@@ -145,6 +146,6 @@ window.onload = function() {
     render();
     setTimeout(() => {
         const promo = document.getElementById('promo-modal');
-        if (promo) promo.classList.add('show-promo');
+        if(promo) promo.classList.add('show-promo');
     }, 2000);
 };
