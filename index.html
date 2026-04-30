@@ -20,7 +20,7 @@
             <div class="bg-green-100 p-2 rounded-lg text-xl">🧸</div>
             <h1 class="text-2xl font-extrabold text-green-700">שנאור</h1>
         </div>
-        <div class="relative cursor-pointer" onclick="toggleCart()">
+        <div class="relative cursor-pointer" onclick="window.toggleCart()">
             <span class="text-3xl">🛒</span>
             <span id="cart-count" class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">0</span>
         </div>
@@ -30,24 +30,35 @@
 
     <div id="side-cart" class="fixed top-0 right-0 h-full w-full md:w-[400px] bg-white shadow-2xl z-[110] flex flex-col">
         <div class="p-6 border-b flex justify-between items-center bg-slate-50">
-            <h3 class="text-xl font-extrabold">הזמנה חדשה</h3>
-            <button onclick="toggleCart()" class="text-3xl text-slate-300">&times;</button>
+            <h3 class="text-xl font-extrabold">הסל שלי</h3>
+            <button onclick="window.toggleCart()" class="text-3xl text-slate-300">&times;</button>
         </div>
         
         <div id="cart-items" class="p-4 border-b flex-grow overflow-y-auto bg-slate-50/50 text-right"></div>
 
         <div class="p-6 space-y-4 text-right border-t">
-            <input type="text" id="custName" class="w-full p-3 border rounded-xl" placeholder="שם מלא">
-            <input type="tel" id="custPhone" class="w-full p-3 border rounded-xl" placeholder="טלפון">
-            <textarea id="custAddress" class="w-full p-3 border rounded-xl" placeholder="כתובת מלאה"></textarea>
+            <input type="text" id="custName" class="w-full p-3 border rounded-xl" placeholder="שם מלא / שם הגן">
+            <input type="tel" id="custPhone" class="w-full p-3 border rounded-xl" placeholder="טלפון ליצירת קשר">
+            <textarea id="custAddress" class="w-full p-3 border rounded-xl" placeholder="כתובת מלאה למשלוח"></textarea>
 
             <div class="flex justify-between text-2xl font-black py-2">
                 <span>סה"כ:</span>
                 <span id="cart-total">₪0</span>
             </div>
             
-            <button onclick="sendEmailOnly()" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-bold mb-2">1. שלחי פרטים במייל 📧</button>
-            <button onclick="goToPaymentOnly()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg">2. מעבר לתשלום באשראי 💳</button>
+            <button onclick="window.sendEmailOnly()" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-bold mb-2 flex flex-col items-center justify-center leading-tight">
+                <span class="text-xs opacity-70 uppercase">שלב 1</span>
+                <span>שליחת פרטים במייל 📧</span>
+            </button>
+
+            <button onclick="window.goToPaymentOnly()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg flex flex-col items-center justify-center leading-tight border-b-4 border-blue-800">
+                <span class="text-xs opacity-70 uppercase">שלב 2</span>
+                <span>מעבר לתשלום באשראי 💳</span>
+            </button>
+            
+            <button onclick="window.sendWhatsappOnly()" class="w-full bg-green-500 text-white py-2 rounded-xl font-bold text-sm mt-2 opacity-90">
+                שלחי הזמנה בוואטסאפ 💬
+            </button>
         </div>
     </div>
 
