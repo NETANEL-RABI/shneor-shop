@@ -94,19 +94,25 @@ window.handleOrder = function(method) {
     const myEmail = "s7176745@gmail.com";
 
     if (method === 'whatsapp') {
-        const text = `שלום שנאור, אני רוצה לבצע הזמנה:\n\n👤 *שם:* ${name}\n📞 *טלפון:* ${phone}\n📍 *כתובת:* ${address}\n\n📦 *מוצרים:* ${itemsList}\n💰 *סה"כ לתשלום:* ₪${total}`;
+        const text = `שלום שנאור, אני רוצה לבצע הזמנה:\n\n👤 *שם:* ${name}\n📞 *טלפון:* ${phone}\n📍 *כתובת:* ${address}\n\n📦 *מוצרים:* ${itemsList}\n💰 *סה"כ:* ₪${total}`;
         window.open(`https://wa.me/${myPhone}?text=${encodeURIComponent(text)}`, '_blank');
+        document.getElementById('payNowBtn').classList.remove('hidden');
     } else {
         const subject = encodeURIComponent(`הזמנה חדשה משנאור: ${name}`);
         const body = encodeURIComponent(`שם: ${name}\nטלפון: ${phone}\nכתובת: ${address}\n\nמוצרים: ${itemsList}\nסה"כ: ₪${total}`);
         window.location.href = `mailto:${myEmail}?subject=${subject}&body=${body}`;
 
-        setTimeout(() => {
-            if(confirm("האם המייל נשלח? לחצי 'אישור' למעבר לתשלום המאובטח")) {
-                window.location.href = "https://meshulam.co.il/pay/YOUR_LINK";
-            }
-        }, 1500);
+        // שינוי כפתור המייל והצגת כפתור התשלום
+        const emailBtn = document.getElementById('emailBtn');
+        emailBtn.innerHTML = "✅ הפרטים הוכנו במייל";
+        emailBtn.classList.replace('bg-slate-800', 'bg-gray-400');
+        document.getElementById('payNowBtn').classList.remove('hidden');
     }
+};
+
+window.goToPayment = function() {
+    // החלף את YOUR_LINK בקישור האמיתי שלך ממשולם/קארדקום
+    window.location.href = "https://meshulam.co.il/pay/YOUR_LINK";
 };
 
 window.closePromo = function() {
