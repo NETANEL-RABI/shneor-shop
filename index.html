@@ -14,6 +14,11 @@
         #side-cart.show-cart { transform: translateX(0); }
         .hidden { display: none !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .animate-bounce-subtle { animation: bounce-subtle 2s infinite; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
@@ -44,7 +49,7 @@
 
     <section id="about-section" class="container mx-auto p-8 mt-10 hidden max-w-3xl bg-white rounded-[3rem] shadow-xl text-center border">
         <h2 class="text-4xl font-black text-slate-800 mb-6">אודות שנאור</h2>
-        <p class="text-xl text-slate-600 leading-relaxed text-right">שנאור הוקמה כדי לספק לגננות פתרונות עיצוביים ופדגוגיים ברמה הגבוהה ביותר. כל מוצר נבחר כדי להפוך את הגן למקום שמח ומלמד יותר.</p>
+        <p class="text-xl text-slate-600 leading-relaxed text-right">שנאור הוקמה כדי לספק לגננות פתרונות עיצוביים ופדגוגיים ברמה הגבוהה ביותר.</p>
         <button onclick="window.showSection('shop')" class="mt-8 bg-green-600 text-white px-8 py-3 rounded-xl font-bold">חזרה לחנות</button>
     </section>
 
@@ -83,9 +88,13 @@
                 <button onclick="window.handleOrder('whatsapp')" class="w-full bg-green-500 text-white py-3 rounded-2xl font-bold shadow-lg hover:bg-green-600 transition-all flex items-center justify-center gap-2">
                     <span>שלחי הזמנה בוואטסאפ 💬</span>
                 </button>
-                <button onclick="window.handleOrder('email')" class="w-full bg-slate-800 text-white py-3 rounded-2xl font-bold shadow-lg hover:bg-slate-900 transition-all flex flex-col items-center">
-                    <span>אישור פרטים ותשלום באשראי 💳</span>
-                    <span class="text-[10px] opacity-70">(הפרטים יישלחו אלינו במייל)</span>
+                
+                <button id="emailBtn" onclick="window.handleOrder('email')" class="w-full bg-slate-800 text-white py-3 rounded-2xl font-bold shadow-lg hover:bg-slate-900 transition-all">
+                    <span>1. שלחי פרטים במייל 📧</span>
+                </button>
+
+                <button id="payNowBtn" onclick="window.goToPayment()" class="hidden w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-xl hover:bg-blue-700 transition-all border-4 border-blue-200 animate-bounce-subtle">
+                    <span>2. לחצי כאן לתשלום באשראי 💳</span>
                 </button>
             </div>
         </div>
