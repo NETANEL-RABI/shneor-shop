@@ -8,85 +8,46 @@
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Assistant', sans-serif; }
-        #promo-modal { display: none; }
-        #promo-modal.show-promo { display: flex !important; }
         #side-cart { transform: translateX(100%); transition: transform 0.3s ease; }
         #side-cart.show-cart { transform: translateX(0); }
         .hidden { display: none !important; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
 
-    <div id="promo-modal" class="fixed inset-0 bg-black/70 z-[200] items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full text-center shadow-2xl border-4 border-green-500 relative">
-            <button onclick="window.closePromo()" class="absolute top-4 right-4 text-gray-400 text-2xl hover:text-black">&times;</button>
-            <div class="text-5xl mb-4">🎁</div>
-            <h2 class="text-3xl font-black text-green-600 mb-2">מבצע מיוחד!</h2>
-            <p class="text-xl font-bold text-slate-700 mb-6">30% הנחה על כל האתר</p>
-            <button onclick="window.closePromo()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg">איזה כיף!</button>
-        </div>
-    </div>
-
     <nav class="bg-white shadow-sm sticky top-0 z-40 py-4 px-6 flex justify-between items-center border-b">
-        <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2 cursor-pointer" onclick="window.showSection('shop')">
-                <div class="bg-green-100 p-2 rounded-lg text-xl">🧸</div>
-                <h1 class="text-2xl font-extrabold text-green-700">שנאור <span class="text-slate-400 font-light text-lg">ציוד לגן</span></h1>
-            </div>
+        <div class="flex items-center gap-2">
+            <div class="bg-green-100 p-2 rounded-lg text-xl">🧸</div>
+            <h1 class="text-2xl font-extrabold text-green-700">שנאור</h1>
         </div>
-        <div class="relative cursor-pointer" onclick="window.toggleCart()">
+        <div class="relative cursor-pointer" onclick="toggleCart()">
             <span class="text-3xl">🛒</span>
             <span id="cart-count" class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">0</span>
         </div>
     </nav>
 
-    <div id="shop-section">
-        <main class="container mx-auto p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="product-grid"></main>
-    </div>
+    <main class="container mx-auto p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="product-grid"></main>
 
-    <div id="side-cart" class="fixed top-0 right-0 h-full w-full md:w-[450px] bg-white shadow-2xl z-[110] flex flex-col">
+    <div id="side-cart" class="fixed top-0 right-0 h-full w-full md:w-[400px] bg-white shadow-2xl z-[110] flex flex-col">
         <div class="p-6 border-b flex justify-between items-center bg-slate-50">
-            <h3 class="text-xl font-extrabold">הסל שלי</h3>
-            <button onclick="window.toggleCart()" class="text-3xl text-slate-300">&times;</button>
+            <h3 class="text-xl font-extrabold">הזמנה חדשה</h3>
+            <button onclick="toggleCart()" class="text-3xl text-slate-300">&times;</button>
         </div>
         
-        <div id="cart-items" class="p-4 border-b max-h-40 overflow-y-auto bg-slate-50/50"></div>
+        <div id="cart-items" class="p-4 border-b flex-grow overflow-y-auto bg-slate-50/50 text-right"></div>
 
-        <div class="p-6 flex-grow overflow-y-auto space-y-4 text-right">
-            <div>
-                <label class="block font-bold text-sm mb-1">פרטי משלוח:</label>
-                <input type="text" id="custName" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500 mb-2" placeholder="שם מלא / שם הגן">
-                <input type="tel" id="custPhone" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500 mb-2" placeholder="טלפון ליצירת קשר">
-                <textarea id="custAddress" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-green-500" rows="2" placeholder="כתובת מלאה (עיר, רחוב, מספר)"></textarea>
-            </div>
+        <div class="p-6 space-y-4 text-right border-t">
+            <input type="text" id="custName" class="w-full p-3 border rounded-xl" placeholder="שם מלא">
+            <input type="tel" id="custPhone" class="w-full p-3 border rounded-xl" placeholder="טלפון">
+            <textarea id="custAddress" class="w-full p-3 border rounded-xl" placeholder="כתובת מלאה"></textarea>
 
-            <div class="flex justify-between text-2xl font-black pt-4 border-t border-slate-100">
+            <div class="flex justify-between text-2xl font-black py-2">
                 <span>סה"כ:</span>
                 <span id="cart-total">₪0</span>
             </div>
             
-            <div class="grid grid-cols-1 gap-4 mt-6">
-                <button onclick="window.sendEmailOnly()" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-slate-900 transition-all flex items-center justify-center gap-3">
-                    <span class="text-xl">📧</span>
-                    <div class="text-right">
-                        <div class="text-xs font-bold uppercase tracking-wider opacity-70">שלב 1</div>
-                        <div class="text-sm">שלחי פרטי הזמנה במייל</div>
-                    </div>
-                </button>
-
-                <button onclick="window.goToPaymentOnly()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-3 border-b-4 border-blue-800">
-                    <span class="text-xl">💳</span>
-                    <div class="text-right">
-                        <div class="text-xs font-bold uppercase tracking-wider opacity-70">שלב 2</div>
-                        <div class="text-sm">מעבר לתשלום באשראי</div>
-                    </div>
-                </button>
-
-                <button onclick="window.sendWhatsappOnly()" class="w-full bg-green-500 text-white py-3 rounded-2xl font-bold shadow-md hover:bg-green-600 transition-all text-sm">
-                    שלחי הזמנה בוואטסאפ 💬
-                </button>
-            </div>
+            <button onclick="sendEmailOnly()" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-bold mb-2">1. שלחי פרטים במייל 📧</button>
+            <button onclick="goToPaymentOnly()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg">2. מעבר לתשלום באשראי 💳</button>
         </div>
     </div>
 
