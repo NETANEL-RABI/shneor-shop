@@ -1,9 +1,8 @@
 const products = [
-    { id: 1, name: "ערכת יצירה 'סתיו צבעוני'", originalPrice: 65, price: 45, category: "עונות", img: "https://picsum.photos/seed/s1/500/500" },
-    { id: 2, name: "לוח אותיות מגנטי", originalPrice: 170, price: 120, category: "למידה", img: "https://picsum.photos/seed/s2/500/500" },
-    { id: 3, name: "מדבקות עידוד מעוצבות", originalPrice: 22, price: 15, category: "קישוט", img: "https://picsum.photos/seed/s3/500/500" },
-    { id: 4, name: "מארז חגי תשרי", originalPrice: 120, price: 85, category: "עונות", img: "https://picsum.photos/seed/s4/500/500" },
-    { id: 5, name: "מספרי פלא - ערכת חשבון", originalPrice: 95, price: 65, category: "למידה", img: "https://picsum.photos/seed/s5/500/500" }
+    { id: 1, name: "ערכת יצירה 'סתיו צבעוני'", price: 45, img: "https://picsum.photos/seed/s1/500/500" },
+    { id: 2, name: "לוח אותיות מגנטי", price: 120, img: "https://picsum.photos/seed/s2/500/500" },
+    { id: 3, name: "מדבקות עידוד מעוצבות", price: 15, img: "https://picsum.photos/seed/s3/500/500" },
+    { id: 4, name: "מארז חגי תשרי", price: 85, img: "https://picsum.photos/seed/s4/500/500" }
 ];
 
 let cart = [];
@@ -12,15 +11,12 @@ function render() {
     const grid = document.getElementById('product-grid');
     if (!grid) return;
     grid.innerHTML = products.map(p => `
-        <div class="bg-white rounded-[2rem] p-5 shadow-sm border border-slate-100 flex flex-col text-right">
-            <img src="${p.img}" class="w-full h-48 object-cover rounded-[1.5rem] mb-4">
-            <h3 class="font-bold text-lg mb-4 h-12 overflow-hidden">${p.name}</h3>
+        <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex flex-col text-right">
+            <img src="${p.img}" class="w-full h-48 object-cover rounded-2xl mb-4">
+            <h3 class="font-bold text-lg mb-4 h-12">${p.name}</h3>
             <div class="mt-auto flex justify-between items-center flex-row-reverse">
-                <div class="flex flex-col">
-                    <span class="text-slate-400 line-through text-[10px]">₪${p.originalPrice}</span>
-                    <span class="text-2xl font-black text-green-600">₪${p.price}</span>
-                </div>
-                <button onclick="window.addToCart(${p.id}, this)" class="bg-slate-900 text-white h-12 w-12 rounded-2xl font-bold text-xl hover:bg-green-600 transition-all">+</button>
+                <span class="text-2xl font-black text-green-600">₪${p.price}</span>
+                <button onclick="addToCart(${p.id})" class="bg-slate-900 text-white h-12 w-12 rounded-xl font-bold text-xl">+</button>
             </div>
         </div>
     `).join('');
@@ -30,88 +26,56 @@ window.toggleCart = function() {
     document.getElementById('side-cart').classList.toggle('show-cart');
 };
 
-window.addToCart = function(id, btn) {
+window.addToCart = function(id) {
     const product = products.find(p => p.id === id);
     cart.push(product);
     updateUI();
-    if (btn) {
-        btn.innerHTML = "✓";
-        btn.classList.replace('bg-slate-900', 'bg-green-500');
-        setTimeout(() => {
-            btn.innerHTML = "+";
-            btn.classList.replace('bg-green-500', 'bg-slate-900');
-        }, 800);
-    }
 };
-
-function updateUI() {
-    document.getElementById('cart-count').innerText = cart.length;
-    const total = cart.reduce((sum, item) => sum + item.price, 0);
-    const cartItemsDiv = document.getElementById('cart-items');
-    cartItemsDiv.innerHTML = cart.map((item, index) => `
-        <div class="flex justify-between items-center bg-white p-2 rounded-lg mb-2 text-xs border border-slate-50">
-            <button onclick="window.removeFromCart(${index})" class="text-red-400 font-bold px-2">🗑️</button>
-            <span class="font-bold">${item.name} - ₪${item.price}</span>
-        </div>
-    `).join('');
-    document.getElementById('cart-total').innerText = `₪${total}`;
-}
 
 window.removeFromCart = function(index) {
     cart.splice(index, 1);
     updateUI();
 };
 
-// --- כפתורים נפרדים ---
-
-// 1. כפתור מייל בלבד
-window.sendEmailOnly = function() {
-    const name = document.getElementById('custName').value.trim();
-    const phone = document.getElementById('custPhone').value.trim();
-    const address = document.getElementById('custAddress').value.trim();
+function updateUI() {
+    document.getElementById('cart-count').innerText = cart.length;
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    const cartItemsDiv = document.getElementById('cart-items');
     
-    if (!name || !phone || !address || cart.length === 0) {
-        alert("נא למלא פרטי משלוח ולהוסיף מוצרים לסל לפני השליחה");
+    cartItemsDiv.innerHTML = cart.map((item, index) => `
+        <div class="flex justify-between items-center bg-white p-2 rounded-lg mb-2 border">
+            <button onclick="removeFromCart(${index})" class="text-red-500 font-bold px-2">🗑️</button>
+            <span class="text-sm font-bold">${item.name} - ₪${item.price}</span>
+        </div>
+    `).join('');
+    
+    document.getElementById('cart-total').innerText = `₪${total}`;
+}
+
+window.sendEmailOnly = function() {
+    const name = document.getElementById('custName').value;
+    const phone = document.getElementById('custPhone').value;
+    const address = document.getElementById('custAddress').value;
+    const itemsList = cart.map(i => i.name).join(", ");
+    const total = document.getElementById('cart-total').innerText;
+
+    if (!name || cart.length === 0) {
+        alert("נא למלא שם ולהוסיף מוצרים לסל");
         return;
     }
 
-    const itemsList = cart.map(i => i.name).join(", ");
-    const total = cart.reduce((s, i) => s + i.price, 0);
     const subject = encodeURIComponent(`הזמנה חדשה: ${name}`);
-    const body = encodeURIComponent(`פרטי הזמנה משנאור:\nשם: ${name}\nטלפון: ${phone}\nכתובת: ${address}\nמוצרים: ${itemsList}\nסה"כ: ₪${total}`);
-    
+    const body = encodeURIComponent(`שם: ${name}\nטלפון: ${phone}\nכתובת: ${address}\nמוצרים: ${itemsList}\nסה"כ: ${total}`);
     window.location.href = `mailto:s7176745@gmail.com?subject=${subject}&body=${body}`;
 };
 
-// 2. כפתור תשלום בלבד
 window.goToPaymentOnly = function() {
     if (cart.length === 0) {
-        alert("הסל שלך ריק");
+        alert("הסל ריק");
         return;
     }
-    // החלף את YOUR_LINK בקישור התשלום האמיתי שלך ממשולם
     window.location.href = "https://meshulam.co.il/pay/YOUR_LINK";
 };
 
-// 3. כפתור וואטסאפ (בונוס)
-window.sendWhatsappOnly = function() {
-    const name = document.getElementById('custName').value.trim();
-    const itemsList = cart.map(i => i.name).join(", ");
-    const total = cart.reduce((s, i) => s + i.price, 0);
-    if (!name) { alert("נא למלא שם"); return; }
-    
-    const text = `שלום שנאור, אני רוצה להזמין:\nשם: ${name}\nמוצרים: ${itemsList}\nסה"כ: ₪${total}`;
-    window.open(`https://wa.me/972527176745?text=${encodeURIComponent(text)}`, '_blank');
-};
-
-window.closePromo = function() {
-    document.getElementById('promo-modal').classList.remove('show-promo');
-};
-
-window.onload = function() {
-    render();
-    setTimeout(() => {
-        const promo = document.getElementById('promo-modal');
-        if (promo) promo.classList.add('show-promo');
-    }, 2000);
-};
+// הרצה ראשונית
+window.onload = render;
