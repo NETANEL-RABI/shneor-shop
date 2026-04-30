@@ -8,18 +8,6 @@ const products = [
 
 let cart = [];
 
-window.showSection = function(section) {
-    const shop = document.getElementById('shop-section');
-    const about = document.getElementById('about-section');
-    if (section === 'about') {
-        shop.classList.add('hidden');
-        about.classList.remove('hidden');
-    } else {
-        about.classList.add('hidden');
-        shop.classList.remove('hidden');
-    }
-};
-
 function render() {
     const grid = document.getElementById('product-grid');
     if (!grid) return;
@@ -74,45 +62,46 @@ window.removeFromCart = function(index) {
     updateUI();
 };
 
-window.handleOrder = function(method) {
+// --- כפתורים נפרדים ---
+
+// 1. כפתור מייל בלבד
+window.sendEmailOnly = function() {
     const name = document.getElementById('custName').value.trim();
     const phone = document.getElementById('custPhone').value.trim();
     const address = document.getElementById('custAddress').value.trim();
-    const total = cart.reduce((s, i) => s + i.price, 0);
-
-    if (!name || !phone || !address) {
-        alert("נא למלא את כל פרטי המשלוח (שם, טלפון וכתובת)");
-        return;
-    }
-    if (cart.length === 0) {
-        alert("הסל שלך ריק");
+    
+    if (!name || !phone || !address || cart.length === 0) {
+        alert("נא למלא פרטי משלוח ולהוסיף מוצרים לסל לפני השליחה");
         return;
     }
 
     const itemsList = cart.map(i => i.name).join(", ");
-    const myPhone = "972527176745";
-    const myEmail = "s7176745@gmail.com";
-
-    if (method === 'whatsapp') {
-        const text = `שלום שנאור, אני רוצה לבצע הזמנה:\n\n👤 *שם:* ${name}\n📞 *טלפון:* ${phone}\n📍 *כתובת:* ${address}\n\n📦 *מוצרים:* ${itemsList}\n💰 *סה"כ:* ₪${total}`;
-        window.open(`https://wa.me/${myPhone}?text=${encodeURIComponent(text)}`, '_blank');
-        document.getElementById('payNowBtn').classList.remove('hidden');
-    } else {
-        const subject = encodeURIComponent(`הזמנה חדשה משנאור: ${name}`);
-        const body = encodeURIComponent(`שם: ${name}\nטלפון: ${phone}\nכתובת: ${address}\n\nמוצרים: ${itemsList}\nסה"כ: ₪${total}`);
-        window.location.href = `mailto:${myEmail}?subject=${subject}&body=${body}`;
-
-        // שינוי כפתור המייל והצגת כפתור התשלום
-        const emailBtn = document.getElementById('emailBtn');
-        emailBtn.innerHTML = "✅ הפרטים הוכנו במייל";
-        emailBtn.classList.replace('bg-slate-800', 'bg-gray-400');
-        document.getElementById('payNowBtn').classList.remove('hidden');
-    }
+    const total = cart.reduce((s, i) => s + i.price, 0);
+    const subject = encodeURIComponent(`הזמנה חדשה: ${name}`);
+    const body = encodeURIComponent(`פרטי הזמנה משנאור:\nשם: ${name}\nטלפון: ${phone}\nכתובת: ${address}\nמוצרים: ${itemsList}\nסה"כ: ₪${total}`);
+    
+    window.location.href = `mailto:s7176745@gmail.com?subject=${subject}&body=${body}`;
 };
 
-window.goToPayment = function() {
-    // החלף את YOUR_LINK בקישור האמיתי שלך ממשולם/קארדקום
+// 2. כפתור תשלום בלבד
+window.goToPaymentOnly = function() {
+    if (cart.length === 0) {
+        alert("הסל שלך ריק");
+        return;
+    }
+    // החלף את YOUR_LINK בקישור התשלום האמיתי שלך ממשולם
     window.location.href = "https://meshulam.co.il/pay/YOUR_LINK";
+};
+
+// 3. כפתור וואטסאפ (בונוס)
+window.sendWhatsappOnly = function() {
+    const name = document.getElementById('custName').value.trim();
+    const itemsList = cart.map(i => i.name).join(", ");
+    const total = cart.reduce((s, i) => s + i.price, 0);
+    if (!name) { alert("נא למלא שם"); return; }
+    
+    const text = `שלום שנאור, אני רוצה להזמין:\nשם: ${name}\nמוצרים: ${itemsList}\nסה"כ: ₪${total}`;
+    window.open(`https://wa.me/972527176745?text=${encodeURIComponent(text)}`, '_blank');
 };
 
 window.closePromo = function() {
