@@ -1,4 +1,3 @@
-// רשימת מוצרים
 const products = [
     { id: 1, name: "ערכת יצירה 'סתיו צבעוני'", originalPrice: 65, price: 45, category: "עונות", img: "https://picsum.photos/seed/s1/500/500" },
     { id: 2, name: "לוח אותיות מגנטי", originalPrice: 170, price: 120, category: "למידה", img: "https://picsum.photos/seed/s2/500/500" },
@@ -8,9 +7,7 @@ const products = [
 ];
 
 let cart = [];
-let currentCategory = 'הכל';
 
-// פונקציות ניווט
 window.showSection = function(section) {
     const shop = document.getElementById('shop-section');
     const about = document.getElementById('about-section');
@@ -21,31 +18,12 @@ window.showSection = function(section) {
         about.classList.add('hidden');
         shop.classList.remove('hidden');
     }
-    window.scrollTo(0,0);
-};
-
-window.filterProducts = function() { render(); };
-
-window.filterByCategory = function(cat) {
-    currentCategory = cat;
-    document.querySelectorAll('.cat-btn').forEach(btn => {
-        btn.classList.replace('bg-green-600', 'bg-slate-100');
-        btn.classList.remove('text-white', 'font-bold');
-    });
-    if (event && event.target) {
-        event.target.classList.replace('bg-slate-100', 'bg-green-600');
-        event.target.classList.add('text-white', 'font-bold');
-    }
-    render();
 };
 
 function render() {
     const grid = document.getElementById('product-grid');
-    if(!grid) return;
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = products.filter(p => (currentCategory === 'הכל' || p.category === currentCategory) && p.name.toLowerCase().includes(searchTerm));
-
-    grid.innerHTML = filtered.map(p => `
+    if (!grid) return;
+    grid.innerHTML = products.map(p => `
         <div class="bg-white rounded-[2rem] p-5 shadow-sm border border-slate-100 flex flex-col text-right">
             <img src="${p.img}" class="w-full h-48 object-cover rounded-[1.5rem] mb-4">
             <h3 class="font-bold text-lg mb-4 h-12 overflow-hidden">${p.name}</h3>
@@ -60,7 +38,6 @@ function render() {
     `).join('');
 }
 
-// פונקציות עגלה
 window.toggleCart = function() {
     document.getElementById('side-cart').classList.toggle('show-cart');
 };
@@ -69,7 +46,7 @@ window.addToCart = function(id, btn) {
     const product = products.find(p => p.id === id);
     cart.push(product);
     updateUI();
-    if(btn) {
+    if (btn) {
         btn.innerHTML = "✓";
         btn.classList.replace('bg-slate-900', 'bg-green-500');
         setTimeout(() => {
@@ -83,14 +60,12 @@ function updateUI() {
     document.getElementById('cart-count').innerText = cart.length;
     const total = cart.reduce((sum, item) => sum + item.price, 0);
     const cartItemsDiv = document.getElementById('cart-items');
-    
     cartItemsDiv.innerHTML = cart.map((item, index) => `
         <div class="flex justify-between items-center bg-white p-2 rounded-lg mb-2 text-xs border border-slate-50">
             <button onclick="window.removeFromCart(${index})" class="text-red-400 font-bold px-2">🗑️</button>
             <span class="font-bold">${item.name} - ₪${item.price}</span>
         </div>
     `).join('');
-    
     document.getElementById('cart-total').innerText = `₪${total}`;
 }
 
@@ -99,8 +74,7 @@ window.removeFromCart = function(index) {
     updateUI();
 };
 
-// הפונקציה החשובה ביותר - טיפול בהזמנה
-window.handleOrder = function() {
+window.handleOrder = function(method) {
     const name = document.getElementById('custName').value.trim();
     const phone = document.getElementById('custPhone').value.trim();
     const address = document.getElementById('custAddress').value.trim();
@@ -116,26 +90,23 @@ window.handleOrder = function() {
     }
 
     const itemsList = cart.map(i => i.name).join(", ");
-    const mailTo = "s7176745@gmail.com";
-    const subject = encodeURIComponent(`הזמנה חדשה משנאור: ${name}`);
-    const body = encodeURIComponent(
-        `פרטי לקוח:\n` +
-        `שם: ${name}\n` +
-        `טלפון: ${phone}\n` +
-        `כתובת: ${address}\n\n` +
-        `מוצרים שהוזמנו:\n${itemsList}\n\n` +
-        `סה"כ לתשלום: ₪${total}`
-    );
+    const myPhone = "972527176745";
+    const myEmail = "s7176745@gmail.com";
 
-    // שליחת המייל
-    window.location.href = `mailto:${mailTo}?subject=${subject}&body=${body}`;
+    if (method === 'whatsapp') {
+        const text = `שלום שנאור, אני רוצה לבצע הזמנה:\n\n👤 *שם:* ${name}\n📞 *טלפון:* ${phone}\n📍 *כתובת:* ${address}\n\n📦 *מוצרים:* ${itemsList}\n💰 *סה"כ לתשלום:* ₪${total}`;
+        window.open(`https://wa.me/${myPhone}?text=${encodeURIComponent(text)}`, '_blank');
+    } else {
+        const subject = encodeURIComponent(`הזמנה חדשה משנאור: ${name}`);
+        const body = encodeURIComponent(`שם: ${name}\nטלפון: ${phone}\nכתובת: ${address}\n\nמוצרים: ${itemsList}\nסה"כ: ₪${total}`);
+        window.location.href = `mailto:${myEmail}?subject=${subject}&body=${body}`;
 
-    // השהייה קלה כדי שהמייל יפתח, ואז שאלה על מעבר לתשלום
-    setTimeout(() => {
-        if(confirm("האם המייל נשלח? לחצי 'אישור' כדי לעבור לדף התשלום המאובטח")) {
-            window.location.href = "https://meshulam.co.il/pay/YOUR_LINK"; // תחליף בלינק האמיתי שלך
-        }
-    }, 1500);
+        setTimeout(() => {
+            if(confirm("האם המייל נשלח? לחצי 'אישור' למעבר לתשלום המאובטח")) {
+                window.location.href = "https://meshulam.co.il/pay/YOUR_LINK";
+            }
+        }, 1500);
+    }
 };
 
 window.closePromo = function() {
@@ -146,6 +117,6 @@ window.onload = function() {
     render();
     setTimeout(() => {
         const promo = document.getElementById('promo-modal');
-        if(promo) promo.classList.add('show-promo');
+        if (promo) promo.classList.add('show-promo');
     }, 2000);
 };
